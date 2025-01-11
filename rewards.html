@@ -206,29 +206,38 @@ button {
         }
 
         .claim-button {
-            background: #F1F5F9;
-            color: #3b82f6;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+    background: #F1F5F9;
+    color: #3b82f6;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 110px;
+    justify-content: center;
+}
 
-        .claim-button:hover {
-            background: #E2E8F0;
-        }
+.claim-button i {
+    font-size: 12px;
+}
 
-        .claim-button:active {
-            transform: scale(0.95);
-        }
+.claim-button.claimed {
+    background: #F1F5F9;
+    color: #94A3B8;
+    cursor: default;
+}
 
-        .claim-button.claimed {
-            background: #F1F5F9;
-            color: #94A3B8;
-            cursor: default;
-        }
+.claim-button:not(.claimed):hover {
+    background: #E2E8F0;
+}
+
+.claim-button:not(.claimed):active {
+    transform: scale(0.95);
+}
 
  /* Invite Card Styles */
  .invite-card {
@@ -398,9 +407,10 @@ button {
                 <div class="task-title">Daily Check-in</div>
                 <div class="task-subtitle">Check in to earn points</div>
             </div>
-            <div class="claim-button" onclick="handleClaim(this, 'checkin', 5)">
-                Claim +5 <i class="fas fa-coins"></i>
-            </div>
+            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
+                <span>Claim +10</span>
+                <i class="fas fa-coins"></i>
+            </button>
         </div>
 
         <div class="task-item">
@@ -411,8 +421,9 @@ button {
                 <div class="task-title">Share Progress</div>
                 <div class="task-subtitle">Share your daily progress</div>
             </div>
-            <button class="claim-button" onclick="handleClaim(this, 'share', 10)">
-                Claim +10 <i class="fas fa-coins"></i>
+            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
+                <span>Claim +20</span>
+                <i class="fas fa-coins"></i>
             </button>
         </div>
 
@@ -430,8 +441,9 @@ button {
                 <div class="task-title">Join Quotes Channel</div>
                 <div class="task-subtitle">Get daily motivation</div>
             </div>
-            <button class="claim-button" onclick="handleClaim(this, 'share', 10)">
-                Claim +50 <i class="fas fa-coins"></i>
+            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
+                <span>Claim +50</span>
+                <i class="fas fa-coins"></i>
             </button>
         </div>
 
@@ -443,8 +455,9 @@ button {
                 <div class="task-title">Use Emergency Tool</div>
                 <div class="task-subtitle">Complete any emergency exercise</div>
             </div>
-            <button class="claim-button" onclick="handleClaim(this, 'share', 10)">
-                Claim +15 <i class="fas fa-coins"></i>
+            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
+                <span>Claim +30</span>
+                <i class="fas fa-coins"></i>
             </button>
         </div>
 
@@ -475,8 +488,9 @@ button {
                 <div class="task-title">30 Day Challenge</div>
                 <div class="task-subtitle">Complete one month</div>
             </div>
-            <button class="claim-button" onclick="handleClaim(this, 'share', 10)">
-                Claim +500 <i class="fas fa-coins"></i>
+            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
+                <span>Claim +300</span>
+                <i class="fas fa-coins"></i>
             </button>
         </div>
 
@@ -488,8 +502,9 @@ button {
                 <div class="task-title">90 Day Master</div>
                 <div class="task-subtitle">Complete three months</div>
             </div>
-            <button class="claim-button" onclick="handleClaim(this, 'share', 10)">
-                Claim +1000 <i class="fas fa-coins"></i>
+            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
+                <span>Claim +1000</span>
+                <i class="fas fa-coins"></i>
             </button>
         </div>
 
@@ -534,19 +549,21 @@ button {
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.setHeaderColor('#fff');
+
 
         function handleClaim(button, type, points) {
-            if (button.classList.contains('claimed')) return;
+                if (button.classList.contains('claimed')) return;
 
-            button.classList.add('claimed');
-            button.textContent = 'Claimed';
-            
-            tg.showPopup({
-                title: 'Reward Claimed!',
-                message: `You earned ${points} points!`,
-                buttons: [{type: 'ok'}]
-            });
-        }
+                button.classList.add('claimed');
+                button.innerHTML = 'Claimed';
+                
+                tg.showPopup({
+                    title: 'Reward Claimed!',
+                    message: `You earned ${points} points!`,
+                    buttons: [{type: 'ok'}]
+                });
+            }
 
         function shareReferralLink() {
             tg.showPopup({
