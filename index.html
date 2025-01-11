@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoFap Tracker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #fff;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* Streak Card and Animations */
+        .streak-card {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            color: white;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .streak-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(
+                circle at center,
+                rgba(255,255,255,0.15) 0%,
+                rgba(255,255,255,0) 70%
+            );
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        @keyframes droplet {
+            0% {
+                transform: scale(0) translateY(-50%);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1) translateY(0);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(0.5) translateY(50%);
+                opacity: 0;
+            }
+        }
+
+        .streak-card.active::before,
+        .streak-card.active::after {
+            content: '';
+            position: absolute;
+            background: radial-gradient(
+                circle at center,
+                rgba(255,255,255,0.8) 0%,
+                rgba(255,255,255,0) 70%
+            );
+        }
+
+        .streak-card.active::before {
+            width: 100px;
+            height: 100px;
+            animation: droplet 3s ease-in infinite;
+            left: 30%;
+            top: 50%;
+        }
+
+        .streak-card.active::after {
+            width: 80px;
+            height: 80px;
+            animation: droplet 3s ease-in infinite 1.5s;
+            left: 60%;
+            top: 40%;
+        }
+
+        .streak-status {
+            font-size: 14px;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4ADE80;
+        }
+
+        .streak-number {
+            font-size: 84px;
+            font-weight: 700;
+            line-height: 1;
+            margin: 20px 0 8px;
+        }
+
+        .streak-time {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Control Button */
+        .control-button {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .control-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255,255,255,0.1),
+                rgba(255,255,255,0)
+            );
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .control-button:hover::before {
+            opacity: 1;
+        }
+
+        .control-button.end {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+        }
+
+        .control-button:active {
+            transform: translateY(2px);
+        }
+
+        /* Stats Card */
+        .stats-card {
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-item {
+            background: #F8FAFC;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3b82f6;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748B;
+        }
+
+/* Navigation Styles */
+/* Navigation Styles */
+.nav-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 8px 8px 16px 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.nav-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.nav-btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 8px 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none; /* Add this if using <a> tags */
+}
+
+/* Default state */
+.nav-btn i {
+    font-size: 22px;
+    color: #94a3b8;
+    transition: color 0.2s ease;
+}
+
+.nav-btn span {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+/* Active state - make sure this is specific enough */
+.nav-btn.active i,
+.nav-buttons .nav-btn.active i {
+    color: #3b82f6 !important;
+}
+
+.nav-btn.active span,
+.nav-buttons .nav-btn.active span {
+    color: #3b82f6 !important;
+}
+
+.reward-badge {
+    position: absolute;
+    top: -2px;
+    right: 28%;
+    background: #3b82f6;
+    color: white;
+    font-size: 11px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    font-weight: 600;
+    padding: 0 5px;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+/* Quote Card */
+.quote-card {
+    background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.quote-content {
+    display: flex;
+    gap: 20px;
+}
+
+.quote-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.quote-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.quote-author {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Tools Card */
+.tools-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tool-button {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: #F8FAFC;
+    border-radius: 12px;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tool-button:hover {
+    background: #F1F5F9;
+}
+
+.tool-button:active {
+    transform: scale(0.99);
+}
+
+.tool-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    border-radius: 12px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-content {
+    flex: 1;
+}
+
+.tool-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #1E293B;
+}
+
+.tool-subtitle {
+    font-size: 13px;
+    color: #64748B;
+}
+
+.coming-soon {
+    font-size: 12px;
+    color: #64748B;
+    background: white;
+    padding: 4px 8px;
+    border-radius: 100px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Streak Card -->
+        <div class="streak-card" id="streakCard">
+            <div class="streak-background"></div>
+            <div class="streak-status">
+                <span class="status-dot"></span>
+                <span id="statusText">Inactive</span>
+            </div>
+            <div class="streak-number" id="streakNumber">0</div>
+            <div class="streak-time" id="streakTime">00:00:00</div>
+        </div>
+
+        <button class="control-button" id="controlButton" onclick="toggleStreak()">
+            <i class="fas fa-play"></i> Start Streak
+        </button>
+
+        <!-- Stats Card -->
+        <div class="card stats-card">
+            <div class="card-header">
+                <i class="fas fa-chart-line" style="color: #3b82f6"></i>
+                <span class="card-title">Statistics</span>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">45</div>
+                    <div class="stat-label">Total Days</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1080</div>
+                    <div class="stat-label">Total Hours</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Best Streak</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quote Card -->
+        <div class="quote-card">
+            <div class="quote-content">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <div>
+                    <div class="quote-text">"Every day of resistance makes you stronger. Your future self will thank you."</div>
+                    <div class="quote-author">Daily Motivation</div>
+                </div>
+            </div>
+        </div>
+
+<!-- Tools Card -->
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-toolbox" style="color: #3b82f6"></i>
+        <span class="card-title">Emergency Tools</span>
+    </div>
+    <div class="tools-grid">
+        <div class="tool-button">
+            <div class="tool-icon">
+                <i class="fas fa-wind"></i>
+            </div>
+            <div class="tool-content">
+                <div class="tool-title">Breathing Exercise</div>
+                <div class="tool-subtitle">Quick breathing technique</div>
+            </div>
+            <i class="fas fa-chevron-right" style="color: #64748B"></i>
+        </div>
+
+        <div class="tool-button">
+            <div class="tool-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="tool-content">
+                <div class="tool-title">Quick Workout</div>
+                <div class="tool-subtitle">Release energy</div>
+            </div>
+            <span class="coming-soon">Coming soon</span>
+        </div>
+
+        <div class="tool-button">
+            <div class="tool-icon">
+                <i class="fas fa-spa"></i>
+            </div>
+            <div class="tool-content">
+                <div class="tool-title">Meditation</div>
+                <div class="tool-subtitle">Clear your mind</div>
+            </div>
+            <span class="coming-soon">Coming soon</span>
+        </div>
+    </div>
+</div>
+
+<nav class="nav-container">
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="window.location.href='rankings.html'">
+            <i class="fas fa-medal"></i>
+            <span>Ranking</span>
+        </button>
+        <button class="nav-btn active" onclick="window.location.href='index.html'">
+            <i class="fas fa-fire"></i>
+            <span>Streak</span>
+        </button>
+        <button class="nav-btn" onclick="window.location.href='rewards.html'">
+            <i class="fas fa-gem"></i>
+            <span>Rewards</span>
+            <div class="reward-badge">7</div>
+        </button>
+    </div>
+</nav>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let isActive = false;
+        let startTime = null;
+        let timerInterval;
+
+        function updateTimer() {
+            if (!startTime) return;
+
+            const now = new Date();
+            const diff = now - startTime;
+            
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            const displayHours = String(hours % 24).padStart(2, '0');
+            const displayMinutes = String(minutes % 60).padStart(2, '0');
+            const displaySeconds = String(seconds % 60).padStart(2, '0');
+            
+            document.getElementById('streakNumber').textContent = days.toString();
+            document.getElementById('streakTime').textContent = 
+                `${displayHours}:${displayMinutes}:${displaySeconds}`;
+        }
+
+        function toggleStreak() {
+            const streakCard = document.getElementById('streakCard');
+            const controlButton = document.getElementById('controlButton');
+            const statusText = document.getElementById('statusText');
+
+            isActive = !isActive;
+
+            if (isActive) {
+                startTime = new Date();
+                streakCard.classList.add('active');
+                controlButton.innerHTML = '<i class="fas fa-stop"></i> End Streak';
+                controlButton.classList.add('end');
+                statusText.textContent = 'Active';
+                timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+            } else {
+                startTime = null;
+                streakCard.classList.remove('active');
+                controlButton.innerHTML = '<i class="fas fa-play"></i> Start Streak';
+                controlButton.classList.remove('end');
+                statusText.textContent = 'Inactive';
+                clearInterval(timerInterval);
+                document.getElementById('streakNumber').textContent = '0';
+                document.getElementById('streakTime').textContent = '00:00:00';
+            }
+        }
+
+        // Navigation handling
+        document.querySelectorAll('.nav-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                if (!button.classList.contains('streak-btn')) {
+                    document.querySelectorAll('.nav-btn').forEach(btn => {
+                        if (!btn.classList.contains('streak-btn')) {
+                            btn.classList.remove('active');
+                        }
+                    });
+                    button.classList.add('active');
+                }
+            });
+        });
+
+        // Add this to your existing script
+document.querySelector('.nav-btn:nth-child(1)').addEventListener('click', () => {
+    window.location.href = 'rankings.html';
+});
+
+document.querySelector('.streak-btn').addEventListener('click', () => {
+    window.location.href = 'index.html';
+});
+
+document.querySelector('.nav-btn:nth-child(3)').addEventListener('click', () => {
+    window.location.href = 'rewards.html';
+});
+    </script>
+</body>
+</html>
