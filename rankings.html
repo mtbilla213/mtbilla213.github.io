@@ -511,18 +511,39 @@ button {
         tg.expand();
         tg.setHeaderColor('#fff');
 
-        // Get user data
-        const userId = tg.initDataUnsafe.user.id;
-        const userName = tg.initDataUnsafe.user.username;
-        const firstName = tg.initDataUnsafe.user.first_name;
+        // Function to initialize user
+        async function initUser() {
+            try {
+                if (!tg.initDataUnsafe?.user?.id) {
+                    console.log("No user data available");
+                    return;
+                }
 
-        // Send to bot through Telegram's sendData method
-        tg.sendData(JSON.stringify({
-            type: "init_user",
-            user_id: userId,
-            username: userName,
-            first_name: firstName
-        }));
+                const userData = {
+                    type: "init_user",
+                    user_id: tg.initDataUnsafe.user.id,
+                    username: tg.initDataUnsafe.user.username,
+                    first_name: tg.initDataUnsafe.user.first_name
+                };
+
+                // Use MainButton for data sending
+                tg.MainButton.setText('Loading...');
+                tg.MainButton.show();
+                tg.MainButton.onClick(() => {
+                    tg.sendData(JSON.stringify(userData));
+                });
+                
+                // Hide button after sending
+                setTimeout(() => {
+                    tg.MainButton.hide();
+                }, 1000);
+            } catch (error) {
+                console.error('Error initializing user:', error);
+            }
+        }
+
+        // Call initUser when page loads
+        document.addEventListener('DOMContentLoaded', initUser);
 
        // Toggle button functionality
        const toggleButtons = document.querySelectorAll('.toggle-button');
