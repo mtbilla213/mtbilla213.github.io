@@ -600,6 +600,11 @@ button {
             }
         });
 
+                // Add this to your web app JavaScript
+        console.log('Sending user data:', userData);
+        tg.sendData(JSON.stringify(userData));
+
+        
 
         function handleClaim(button, type, points) {
                 if (button.classList.contains('claimed')) return;

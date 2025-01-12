@@ -529,6 +529,12 @@ button {
             }
         });
 
+                // Add this to your web app JavaScript
+        console.log('Sending user data:', userData);
+        tg.sendData(JSON.stringify(userData));
+
+        
+
        // Toggle button functionality
        const toggleButtons = document.querySelectorAll('.toggle-button');
        toggleButtons.forEach(button => {

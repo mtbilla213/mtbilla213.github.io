@@ -650,6 +650,12 @@ button {
             }
         });
 
+                // Add this to your web app JavaScript
+        console.log('Sending user data:', userData);
+        tg.sendData(JSON.stringify(userData));
+
+        
+
 
         let isActive = false;
         let startTime = null;
