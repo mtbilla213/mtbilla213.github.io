@@ -517,19 +517,23 @@ button {
    <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
-tg.setHeaderColor('#fff');
 tg.ready();
 
-// Send user data immediately after page load
+// Wait for page load
 document.addEventListener('DOMContentLoaded', function() {
-    const userData = {
-        type: "init_user",
-        user_id: tg.initDataUnsafe.user.id,
-        username: tg.initDataUnsafe.user.username,
-        first_name: tg.initDataUnsafe.user.first_name
-    };
-    console.log("Sending data:", userData);
-    tg.sendData(JSON.stringify(userData));
+    try {
+        const userData = {
+            type: "init_user",
+            user_id: tg.initDataUnsafe.user.id,
+            username: tg.initDataUnsafe.user.username,
+            first_name: tg.initDataUnsafe.user.first_name
+        };
+        
+        // Don't send data immediately - this was causing the closure
+        console.log("Web app initialized with user:", userData);
+    } catch (error) {
+        console.error("Error during initialization:", error);
+    }
 });
 
 
