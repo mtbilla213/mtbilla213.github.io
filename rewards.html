@@ -159,17 +159,6 @@ button {
         }
 
         /* Task Items */
-        .task-item {
-            background: white;
-            border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: transform 0.2s ease;
-        }
 
         .task-item:hover {
             transform: translateY(-1px);
@@ -368,6 +357,41 @@ button {
 }
 
 
+
+.card {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+.task-item {
+    background: #F8FAFC;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.task-item:last-child {
+    margin-bottom: 0;
+}
     </style>
 </head>
 <body>
@@ -392,123 +416,129 @@ button {
                 <div class="stats-card-subtitle">600 points earned</div>
             </div>
         </div>
-
-        <!-- Daily Tasks -->
-        <div class="section-title">
-            <i class="fas fa-calendar-day"></i>
-            Daily Tasks
+    
+        <!-- Daily Tasks Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calendar-day" style="color: #3b82f6"></i>
+                <span class="card-title">Daily Tasks</span>
+            </div>
+            
+            <div class="task-item">
+                <div class="task-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">Daily Check-in</div>
+                    <div class="task-subtitle">Check in to earn points</div>
+                </div>
+                <button class="claim-button" onclick="handleClaim(this, 'checkin', 5)">
+                    <span>Claim +5</span>
+                    <i class="fas fa-coins"></i>
+                </button>
+            </div>
+    
+            <div class="task-item">
+                <div class="task-icon">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">Share Progress</div>
+                    <div class="task-subtitle">Share your daily progress</div>
+                </div>
+                <button class="claim-button" onclick="handleClaim(this, 'checkin', 10)">
+                    <span>Claim +10</span>
+                    <i class="fas fa-coins"></i>
+                </button>
+            </div>
         </div>
-        
-        <div class="task-item">
-            <div class="task-icon">
-                <i class="fas fa-sign-in-alt"></i>
+    
+        <!-- Tasks Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-tasks" style="color: #3b82f6"></i>
+                <span class="card-title">Tasks</span>
             </div>
-            <div class="task-content">
-                <div class="task-title">Daily Check-in</div>
-                <div class="task-subtitle">Check in to earn points</div>
+    
+            <div class="task-item">
+                <div class="task-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">Join Quotes Channel</div>
+                    <div class="task-subtitle">Get daily motivation</div>
+                </div>
+                <button class="claim-button" onclick="handleClaim(this, 'checkin', 50)">
+                    <span>Claim +50</span>
+                    <i class="fas fa-coins"></i>
+                </button>
             </div>
-            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
-                <span>Claim +10</span>
-                <i class="fas fa-coins"></i>
-            </button>
+    
+            <div class="task-item">
+                <div class="task-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">Use Emergency Tool</div>
+                    <div class="task-subtitle">Complete any emergency exercise</div>
+                </div>
+                <button class="claim-button" onclick="handleClaim(this, 'checkin', 30)">
+                    <span>Claim +30</span>
+                    <i class="fas fa-coins"></i>
+                </button>
+            </div>
         </div>
-
-        <div class="task-item">
-            <div class="task-icon">
-                <i class="fas fa-share-alt"></i>
+    
+        <!-- Milestones Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-trophy" style="color: #3b82f6"></i>
+                <span class="card-title">Milestones</span>
             </div>
-            <div class="task-content">
-                <div class="task-title">Share Progress</div>
-                <div class="task-subtitle">Share your daily progress</div>
+    
+            <div class="task-item">
+                <div class="task-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">7 Day Streak</div>
+                    <div class="task-subtitle">Complete your first week</div>
+                </div>
+                <button class="claim-button claimed">
+                    Claimed
+                </button>
             </div>
-            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
-                <span>Claim +20</span>
-                <i class="fas fa-coins"></i>
-            </button>
+    
+            <div class="task-item">
+                <div class="task-icon">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">30 Day Challenge</div>
+                    <div class="task-subtitle">Complete one month</div>
+                </div>
+                <button class="claim-button" onclick="handleClaim(this, 'checkin', 300)">
+                    <span>Claim +300</span>
+                    <i class="fas fa-coins"></i>
+                </button>
+            </div>
+    
+            <div class="task-item">
+                <div class="task-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">90 Day Master</div>
+                    <div class="task-subtitle">Complete three months</div>
+                </div>
+                <button class="claim-button" onclick="handleClaim(this, 'checkin', 1000)">
+                    <span>Claim +1000</span>
+                    <i class="fas fa-coins"></i>
+                </button>
+            </div>
         </div>
-
-        <!-- Tasks -->
-        <div class="section-title">
-            <i class="fas fa-tasks"></i>
-            Tasks
-        </div>
-
-        <div class="task-item">
-            <div class="task-icon">
-                <i class="fas fa-quote-right"></i>
-            </div>
-            <div class="task-content">
-                <div class="task-title">Join Quotes Channel</div>
-                <div class="task-subtitle">Get daily motivation</div>
-            </div>
-            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
-                <span>Claim +50</span>
-                <i class="fas fa-coins"></i>
-            </button>
-        </div>
-
-        <div class="task-item">
-            <div class="task-icon">
-                <i class="fas fa-brain"></i>
-            </div>
-            <div class="task-content">
-                <div class="task-title">Use Emergency Tool</div>
-                <div class="task-subtitle">Complete any emergency exercise</div>
-            </div>
-            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
-                <span>Claim +30</span>
-                <i class="fas fa-coins"></i>
-            </button>
-        </div>
-
-        <!-- Milestones -->
-        <div class="section-title">
-            <i class="fas fa-trophy"></i>
-            Milestones
-        </div>
-
-        <div class="task-item">
-            <div class="task-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="task-content">
-                <div class="task-title">7 Day Streak</div>
-                <div class="task-subtitle">Complete your first week</div>
-            </div>
-            <button class="claim-button claimed">
-                Claimed
-            </button>
-        </div>
-
-        <div class="task-item">
-            <div class="task-icon">
-                <i class="fas fa-medal"></i>
-            </div>
-            <div class="task-content">
-                <div class="task-title">30 Day Challenge</div>
-                <div class="task-subtitle">Complete one month</div>
-            </div>
-            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
-                <span>Claim +300</span>
-                <i class="fas fa-coins"></i>
-            </button>
-        </div>
-
-        <div class="task-item">
-            <div class="task-icon">
-                <i class="fas fa-crown"></i>
-            </div>
-            <div class="task-content">
-                <div class="task-title">90 Day Master</div>
-                <div class="task-subtitle">Complete three months</div>
-            </div>
-            <button class="claim-button" onclick="handleClaim(this, 'claim-type', points)">
-                <span>Claim +1000</span>
-                <i class="fas fa-coins"></i>
-            </button>
-        </div>
-
-        <!-- Referral Card -->
+    
+        <!-- Invite Card -->
         <div class="invite-card">
             <div class="invite-header">
                 <div class="invite-title">Invite Friends</div>
@@ -527,7 +557,8 @@ button {
                 </div>
             </div>
         </div>
-
+    </div>
+    
     <nav class="nav-container">
         <div class="nav-buttons">
             <button class="nav-btn" onclick="window.location.href='rankings.html'">
