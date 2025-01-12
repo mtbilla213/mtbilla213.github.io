@@ -636,118 +636,107 @@ button {
 </nav>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.setHeaderColor('#fff');
-        tg.ready(); // This tells Telegram webapp is ready
+let tg = window.Telegram.WebApp;
+tg.expand();
+tg.setHeaderColor('#fff');
+tg.ready();
 
-        // Initialize on page load without sending data right away
-        document.addEventListener('DOMContentLoaded', function() {
-            if (tg.initDataUnsafe?.user?.id) {
-                const userData = {
-                    type: "init_user",
-                    user_id: tg.initDataUnsafe.user.id,
-                    username: tg.initDataUnsafe.user.username,
-                    first_name: tg.initDataUnsafe.user.first_name
-                };
-                
-                // Set a small delay before sending data
-                setTimeout(() => {
-                    tg.sendData(JSON.stringify(userData));
-                }, 500);
-            }
-        });
+// Send user data immediately after page load
+document.addEventListener('DOMContentLoaded', function() {
+    const userData = {
+        type: "init_user",
+        user_id: tg.initDataUnsafe.user.id,
+        username: tg.initDataUnsafe.user.username,
+        first_name: tg.initDataUnsafe.user.first_name
+    };
+    console.log("Sending data:", userData);
+    tg.sendData(JSON.stringify(userData));
+});
 
-                // Add this to your web app JavaScript
-        console.log('Sending user data:', userData);
-        tg.sendData(JSON.stringify(userData));
+// Streak functionality
+let isActive = false;
+let startTime = null;
+let timerInterval;
 
+function updateTimer() {
+    if (!startTime) return;
+    
+    const now = new Date();
+    const diff = now - startTime;
+    
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
 
+    const displayHours = String(hours % 24).padStart(2, '0');
+    const displayMinutes = String(minutes % 60).padStart(2, '0');
+    const displaySeconds = String(seconds % 60).padStart(2, '0');
+    
+    document.getElementById('streakNumber').textContent = days.toString();
+    document.getElementById('streakTime').textContent = 
+        `${displayHours}:${displayMinutes}:${displaySeconds}`;
+}
 
+function toggleStreak() {
+    const streakCard = document.getElementById('streakCard');
+    const button = document.getElementById('controlButton');
+    const buttonText = button.querySelector('span');
+    const buttonIcon = button.querySelector('i');
+    const statusText = document.getElementById('statusText');
 
-        let isActive = false;
-        let startTime = null;
-        let timerInterval;
+    isActive = !isActive;
 
-        function updateTimer() {
-            if (!startTime) return;
+    if (isActive) {
+        startTime = new Date();
+        streakCard.classList.add('active');
+        button.classList.add('end');
+        buttonIcon.classList.remove('fa-play');
+        buttonIcon.classList.add('fa-stop');
+        buttonText.textContent = 'End Streak';
+        statusText.textContent = 'Active';
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+    } else {
+        startTime = null;
+        streakCard.classList.remove('active');
+        button.classList.remove('end');
+        buttonIcon.classList.remove('fa-stop');
+        buttonIcon.classList.add('fa-play');
+        buttonText.textContent = 'Start Streak';
+        statusText.textContent = 'Inactive';
+        clearInterval(timerInterval);
+        document.getElementById('streakNumber').textContent = '0';
+        document.getElementById('streakTime').textContent = '00:00:00';
+    }
+}
 
-            const now = new Date();
-            const diff = now - startTime;
-            
-            const seconds = Math.floor(diff / 1000);
-            const minutes = Math.floor(seconds / 60);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
-
-            const displayHours = String(hours % 24).padStart(2, '0');
-            const displayMinutes = String(minutes % 60).padStart(2, '0');
-            const displaySeconds = String(seconds % 60).padStart(2, '0');
-            
-            document.getElementById('streakNumber').textContent = days.toString();
-            document.getElementById('streakTime').textContent = 
-                `${displayHours}:${displayMinutes}:${displaySeconds}`;
-        }
-
-        function toggleStreak() {
-            const streakCard = document.getElementById('streakCard');
-            const button = document.getElementById('controlButton');
-            const buttonText = button.querySelector('span');
-            const buttonIcon = button.querySelector('i');
-            const statusText = document.getElementById('statusText');
-
-            isActive = !isActive;
-
-            if (isActive) {
-                startTime = new Date();
-                streakCard.classList.add('active');
-                button.classList.add('end');
-                buttonIcon.classList.remove('fa-play');
-                buttonIcon.classList.add('fa-stop');
-                buttonText.textContent = 'End Streak';
-                statusText.textContent = 'Active';
-                timerInterval = setInterval(updateTimer, 1000);
-                updateTimer();
-            } else {
-                startTime = null;
-                streakCard.classList.remove('active');
-                button.classList.remove('end');
-                buttonIcon.classList.remove('fa-stop');
-                buttonIcon.classList.add('fa-play');
-                buttonText.textContent = 'Start Streak';
-                statusText.textContent = 'Inactive';
-                clearInterval(timerInterval);
-                document.getElementById('streakNumber').textContent = '0';
-                document.getElementById('streakTime').textContent = '00:00:00';
-            }
-        }
-
-        // Navigation handling
-        document.querySelectorAll('.nav-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                if (!button.classList.contains('streak-btn')) {
-                    document.querySelectorAll('.nav-btn').forEach(btn => {
-                        if (!btn.classList.contains('streak-btn')) {
-                            btn.classList.remove('active');
-                        }
-                    });
-                    button.classList.add('active');
+// Navigation handling
+document.querySelectorAll('.nav-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        if (!button.classList.contains('streak-btn')) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (!btn.classList.contains('streak-btn')) {
+                    btn.classList.remove('active');
                 }
             });
-        });
+            button.classList.add('active');
+        }
+    });
+});
 
-        // Add this to your existing script
-        document.querySelector('.nav-btn:nth-child(1)').addEventListener('click', () => {
-            window.location.href = 'rankings.html';
-        });
+// Navigation links
+document.querySelector('.nav-btn:nth-child(1)').addEventListener('click', () => {
+    window.location.href = 'rankings.html';
+});
 
-        document.querySelector('.streak-btn').addEventListener('click', () => {
-            window.location.href = 'index.html';
-        });
+document.querySelector('.streak-btn').addEventListener('click', () => {
+    window.location.href = 'index.html';
+});
 
-        document.querySelector('.nav-btn:nth-child(3)').addEventListener('click', () => {
-            window.location.href = 'rewards.html';
-        });
+document.querySelector('.nav-btn:nth-child(3)').addEventListener('click', () => {
+    window.location.href = 'rewards.html';
+});
 
     </script>
 </body>

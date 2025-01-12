@@ -586,32 +586,22 @@ button {
     </nav>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.setHeaderColor('#fff');
-        tg.ready(); // This tells Telegram webapp is ready
+let tg = window.Telegram.WebApp;
+tg.expand();
+tg.setHeaderColor('#fff');
+tg.ready();
 
-        // Initialize on page load without sending data right away
-        document.addEventListener('DOMContentLoaded', function() {
-            if (tg.initDataUnsafe?.user?.id) {
-                const userData = {
-                    type: "init_user",
-                    user_id: tg.initDataUnsafe.user.id,
-                    username: tg.initDataUnsafe.user.username,
-                    first_name: tg.initDataUnsafe.user.first_name
-                };
-                
-                // Set a small delay before sending data
-                setTimeout(() => {
-                    tg.sendData(JSON.stringify(userData));
-                }, 500);
-            }
-        });
-
-                // Add this to your web app JavaScript
-        console.log('Sending user data:', userData);
-        tg.sendData(JSON.stringify(userData));
-
+// Send user data immediately after page load
+document.addEventListener('DOMContentLoaded', function() {
+    const userData = {
+        type: "init_user",
+        user_id: tg.initDataUnsafe.user.id,
+        username: tg.initDataUnsafe.user.username,
+        first_name: tg.initDataUnsafe.user.first_name
+    };
+    console.log("Sending data:", userData);
+    tg.sendData(JSON.stringify(userData));
+});
 
 
         function handleClaim(button, type, points) {
