@@ -558,7 +558,7 @@ button {
             </div>
         </div>
     </div>
-    
+
     <nav class="nav-container">
         <div class="nav-buttons">
             <button class="nav-btn" onclick="window.location.href='rankings.html'">
@@ -581,6 +581,19 @@ button {
         let tg = window.Telegram.WebApp;
         tg.expand();
         tg.setHeaderColor('#fff');
+
+        // Get user data
+        const userId = tg.initDataUnsafe.user.id;
+        const userName = tg.initDataUnsafe.user.username;
+        const firstName = tg.initDataUnsafe.user.first_name;
+
+        // Send to bot through Telegram's sendData method
+        tg.sendData(JSON.stringify({
+            type: "init_user",
+            user_id: userId,
+            username: userName,
+            first_name: firstName
+        }));
 
 
         function handleClaim(button, type, points) {
