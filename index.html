@@ -230,6 +230,7 @@ button {
     width: 100%;
     padding: 16px;
     border-radius: 16px;
+    margin-bottom: 24px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -286,7 +287,7 @@ button {
 }
         /* Stats Card */
         .stats-card {
-            margin-bottom: 16px;
+            margin-bottom: 24px;
         }
 
         .card-header {
@@ -630,28 +631,24 @@ button {
         let tg = window.Telegram.WebApp;
         tg.expand();
         tg.setHeaderColor('#fff');
+        tg.ready(); // This tells Telegram webapp is ready
 
-        // Function to initialize user
-        async function initUser() {
-            if (!tg.initDataUnsafe?.user?.id) {
-                console.log("No user data available");
-                return;
+        // Initialize on page load without sending data right away
+        document.addEventListener('DOMContentLoaded', function() {
+            if (tg.initDataUnsafe?.user?.id) {
+                const userData = {
+                    type: "init_user",
+                    user_id: tg.initDataUnsafe.user.id,
+                    username: tg.initDataUnsafe.user.username,
+                    first_name: tg.initDataUnsafe.user.first_name
+                };
+                
+                // Set a small delay before sending data
+                setTimeout(() => {
+                    tg.sendData(JSON.stringify(userData));
+                }, 500);
             }
-
-            const userData = {
-                type: "init_user",
-                user_id: tg.initDataUnsafe.user.id,
-                username: tg.initDataUnsafe.user.username,
-                first_name: tg.initDataUnsafe.user.first_name
-            };
-
-            // Send data directly without MainButton
-            tg.sendData(JSON.stringify(userData));
-        }
-
-        // Call initUser when page loads
-        window.addEventListener('load', initUser);
-
+        });
 
 
         let isActive = false;
